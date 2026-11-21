@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f5ef">
+  <title>MealMate — World Kitchen</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f7f5ef;
+      --surface: #fffefa;
+      --surface-2: #f0eee7;
+      --ink: #202820;
+      --muted: #687168;
+      --line: #dedfd4;
+      --green: #2f6848;
+      --green-dark: #214e36;
+      --green-pale: #e4eee5;
+      --orange: #e89853;
+      --shadow: 0 18px 50px #26332212;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --page: #171d19;
+      --surface: #212a24;
+      --surface-2: #2a342d;
+      --ink: #f1f3eb;
+      --muted: #b0bbb0;
+      --line: #3a473d;
+      --green: #8bc49a;
+      --green-dark: #b4dfbd;
+      --green-pale: #2b3d30;
+      --orange: #f0ac70;
+      --shadow: 0 18px 50px #00000030;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        radial-gradient(ellipse at 12% 2%, #e8eedf99, transparent 32rem),
+        radial-gradient(ellipse at 94% 22%, #f5e5d299, transparent 30rem),
+        var(--page);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, dialog:focus-visible {
+      outline: 3px solid var(--orange);
+      outline-offset: 3px;
+    }
+    .shell { width: min(1180px, calc(100% - 36px)); margin: 0 auto; }
+    .topbar {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; color: var(--ink); }
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 14px;
+      background: var(--green);
+      color: #fff;
+      font-size: 23px;
+    }
+    .brand-name { font-size: 19px; font-weight: 850; letter-spacing: -.04em; }
+    .brand-tag { display: block; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+    .top-actions { display: flex; align-items: center; gap: 9px; }
+    .language-select {
+      min-height: 42px;
+      max-width: 132px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: var(--surface);
+      color: var(--ink);
+    }
+    .icon-button, .quiet-button, .primary-button, .filter-button, .country-chip, .meal-button {
+      border: 1px solid var(--line);
+      cursor: pointer;
+      transition: transform .16s ease, background .16s ease, border-color .16s ease;
+    }
+    .icon-button:hover, .quiet-button:hover, .primary-button:hover, .filter-button:hover, .country-chip:hover, .meal-button:hover { transform: translateY(-1px); }
+    .icon-button {
+      width: 42px; height: 42px; display: grid; place-items: center;
+      border-radius: 13px; background: var(--surface); font-size: 18px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 360px);
+      align-items: center;
+      gap: 30px;
+      padding: 48px 0 30px;
+    }
+    .eyebrow { color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { max-width: 740px; margin: 10px 0 13px; font-size: clamp(36px, 6vw, 64px); line-height: .99; letter-spacing: -.065em; }
+    .hero p { max-width: 640px; margin: 0; color: var(--muted); font-size: 16px; }
+    .hero-note {
+      padding: 18px 19px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: color-mix(in srgb, var(--surface) 85%, transparent);
+      box-shadow: var(--shadow);
+    }
+    .hero-note strong { display: block; margin-bottom: 4px; }
+    .hero-note span { color: var(--muted); font-size: 13px; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 0 0 20px;
+    }
+    .search-wrap { position: relative; flex: 1 1 280px; }
+    .search-form { display: flex; flex: 1 1 350px; gap: 8px; }
+    .search-form .search-wrap { min-width: 0; }
+    .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .search-input {
+      width: 100%; min-height: 48px; padding: 11px 15px 11px 43px;
+      border: 1px solid var(--line); border-radius: 14px;
+      background: var(--surface); color: var(--ink);
+    }
+    .quiet-button, .primary-button, .filter-button {
+      min-height: 44px; padding: 9px 14px; border-radius: 13px;
+      background: var(--surface); font-weight: 750;
+    }
+    .primary-button { border-color: var(--green); background: var(--green); color: #fff; }
+    .primary-button:hover { background: var(--green-dark); }
+    .search-status { flex: 1 0 100%; margin: -11px 0 0; color: var(--muted); font-size: 12px; }
+    .filter-button[aria-pressed="true"], .country-chip[aria-pressed="true"] { border-color: var(--green); background: var(--green-pale); color: var(--green-dark); }
+    .explore-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(280px, .75fr); gap: 18px; align-items: stretch; }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .panel-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 15px; padding: 20px 21px 12px; }
+    .panel-heading h2 { margin: 0; font-size: 19px; letter-spacing: -.03em; }
+    .panel-heading p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .map-wrap { padding: 0 13px 10px; }
+    .map-stage { position: relative; width: 100%; aspect-ratio: 2 / 1; }
+    .world-map-art, .world-map { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+    .world-map-art { object-fit: fill; }
+    :root[data-theme="dark"] .world-map-art { filter: brightness(.66) saturate(.7); }
+    .world-map { overflow: visible; pointer-events: none; }
+    .map-pin { cursor: pointer; pointer-events: all; }
+    .map-pin .pin-dot { fill: var(--green); stroke: var(--surface); stroke-width: 2px; transition: r .15s, fill .15s; }
+    .map-pin .pin-label { fill: #fff; font-size: 8px; font-weight: 850; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+    .map-pin:hover .pin-dot, .map-pin:focus .pin-dot, .map-pin[aria-pressed="true"] .pin-dot { fill: #d67d3e; r: 12px; }
+    .map-caption { padding: 0 21px 17px; color: var(--muted); font-size: 12px; }
+    .country-list { display: flex; flex-direction: column; }
+    .country-head { padding: 20px 20px 14px; border-bottom: 1px solid var(--line); }
+    .country-title-row { display: flex; align-items: center; gap: 10px; }
+    .country-flag { font-size: 27px; }
+    .country-head h2 { margin: 0; font-size: 21px; letter-spacing: -.035em; }
+    .country-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .country-recipes { display: grid; gap: 10px; padding: 15px; }
+    .meal-button {
+      display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 12px;
+      width: 100%; padding: 11px; text-align: left;
+      border-radius: 15px; background: var(--surface);
+    }
+    .meal-emoji { display: grid; width: 52px; height: 52px; place-items: center; border-radius: 13px; background: var(--surface-2); object-fit: cover; }
+    .meal-copy strong { display: block; font-size: 14px; line-height: 1.25; }
+    .meal-copy span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .meal-kcal { color: var(--green); white-space: nowrap; font-size: 12px; font-weight: 800; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 34px 0 14px; }
+    .section-heading h2 { margin: 0; font-size: 25px; letter-spacing: -.045em; }
+    .section-heading p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .filter-row { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 5px; scrollbar-width: thin; }
+    .filter-button { flex: 0 0 auto; min-height: 37px; padding: 7px 12px; border-radius: 999px; font-size: 13px; }
+    .meal-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; padding: 15px 0 36px; }
+    .meal-card { min-width: 0; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); overflow: hidden; box-shadow: var(--shadow); }
+    .meal-card-top { display: flex; align-items: center; justify-content: space-between; padding: 15px 15px 7px; }
+    .food-art { display: grid; width: 60px; height: 60px; place-items: center; border-radius: 17px; background: var(--surface-2); object-fit: cover; }
+    .favorite-button { display: grid; width: 37px; height: 37px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: var(--surface); cursor: pointer; font-size: 18px; }
+    .favorite-button[aria-pressed="true"] { color: #c94b55; }
+    .meal-card-body { padding: 8px 15px 15px; }
+    .meal-origin { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .meal-card h3 { margin: 5px 0 6px; font-size: 17px; letter-spacing: -.025em; }
+    .meal-card p { min-height: 39px; margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+    .meal-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; font-size: 12px; font-weight: 750; }
+    .meal-meta span:last-child { color: var(--green); }
+    .card-actions { display: flex; gap: 8px; }
+    .card-actions button { flex: 1; min-height: 38px; padding: 7px 9px; font-size: 12px; }
+    .empty-state { grid-column: 1 / -1; padding: 32px 16px; border: 1px dashed var(--line); border-radius: 18px; color: var(--muted); text-align: center; }
+    .footer { padding: 18px 0 30px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .footer strong { color: var(--ink); }
+    .footer a { color: var(--green); font-weight: 750; }
+    [dir="rtl"] .search-icon { right: 15px; left: auto; }
+    [dir="rtl"] .search-input { padding-right: 43px; padding-left: 15px; }
+
+    dialog {
+      width: min(700px, calc(100% - 28px));
+      max-height: min(88vh, 880px);
+      padding: 0;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 30px 90px #0005;
+    }
+    dialog::backdrop { background: #101711a8; backdrop-filter: blur(3px); }
+    .dialog-content { padding: 22px; }
+    .dialog-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .dialog-title { display: flex; align-items: center; gap: 12px; }
+    .dialog-title .food-art { flex: 0 0 62px; }
+    .dialog-title h2 { margin: 0; font-size: clamp(21px, 4vw, 30px); line-height: 1.1; letter-spacing: -.045em; }
+    .dialog-title p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .dialog-close { flex: 0 0 40px; }
+    .dialog-description { margin: 17px 0; color: var(--muted); }
+    .recipe-stats { display: flex; flex-wrap: wrap; gap: 9px; margin: 0 0 20px; }
+    .recipe-stats span { padding: 7px 10px; border-radius: 999px; background: var(--surface-2); font-size: 12px; font-weight: 750; }
+    .recipe-columns { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 22px; }
+    .recipe-columns h3 { margin: 0 0 8px; font-size: 15px; }
+    .recipe-columns ul, .recipe-columns ol { margin: 0; padding-left: 20px; color: var(--muted); font-size: 13px; }
+    .recipe-columns li { padding: 3px 0; }
+    .calorie-note { margin: 18px 0 0; padding: 11px 13px; border-left: 3px solid var(--orange); border-radius: 0 10px 10px 0; background: var(--surface-2); color: var(--muted); font-size: 12px; }
+    .dialog-footer { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; }
+
+    @media (max-width: 850px) {
+      .hero { grid-template-columns: 1fr; gap: 18px; padding-top: 37px; }
+      .hero-note { max-width: 460px; }
+      .explore-grid { grid-template-columns: 1fr; }
+      .meal-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 540px) {
+      .shell { width: min(100% - 24px, 1180px); }
+      .topbar { min-height: 67px; }
+      .language-select { max-width: 112px; min-height: 39px; padding: 7px 8px; font-size: 13px; }
+      .brand-mark { width: 38px; height: 38px; }
+      .brand-name { font-size: 17px; }
+      .brand-tag { font-size: 9px; }
+      .hero { padding: 30px 0 22px; }
+      .hero p { font-size: 14px; }
+      .hero-note { padding: 12px; }
+      .hero-note span, .country-head > p:last-child, .meal-card p { display: none; }
+      .panel { border-radius: 17px; }
+      .panel-heading { padding: 16px 15px 9px; }
+      .map-wrap { padding: 0 6px 6px; }
+      .map-caption { padding: 0 15px 14px; }
+      .meal-grid { grid-template-columns: 1fr; }
+      .meal-card { display: grid; grid-template-columns: 86px minmax(0, 1fr); }
+      .meal-card-top { align-items: start; flex-direction: column; justify-content: flex-start; padding: 13px 0 13px 13px; }
+      .meal-card-body { padding: 13px 13px 13px 5px; }
+      .recipe-columns { grid-template-columns: 1fr; gap: 15px; }
+      .dialog-content { padding: 17px; }
+      .meal-kcal { font-size: 11px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="MealMate home" data-i18n-aria="home">
+        <span class="brand-mark" aria-hidden="true">♨</span>
+        <span><span class="brand-name">MealMate</span><span class="brand-tag" data-i18n="brandTag">World kitchen</span></span>
+      </a>
+      <div class="top-actions">
+        <select class="language-select" id="languageSelect" aria-label="Language">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="ru">Русский</option>
+          <option value="uz">Oʻzbekcha</option>
+          <option value="ar">العربية</option>
+          <option value="hi">हिन्दी</option>
+          <option value="tr">Türkçe</option>
+        </select>
+        <button class="icon-button" id="themeButton" type="button" aria-label="Switch to dark theme" title="Switch theme" data-i18n-title="switchTheme" data-i18n-aria="switchDark">☾</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow" data-i18n="eyebrow">Good food, shared everywhere</div>
+          <h1 data-i18n="heroTitle">Taste the world.</h1>
+          <p data-i18n="heroText">Pick a country. Find a dish. Cook at home.</p>
+        </div>
+        <aside class="hero-note">
+          <strong data-i18n="noteTitle">Cook at home, anywhere. 🌍</strong>
+          <span data-i18n="noteText">Local recipes · works offline</span>
+        </aside>
+      </section>
+
+      <section class="toolbar" aria-label="Find recipes" data-i18n-aria="findRecipes">
+        <form class="search-form" id="searchForm" role="search">
+          <label class="search-wrap">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <input class="search-input" id="searchInput" type="search" autocomplete="off" placeholder="Food, country, ingredient..." aria-label="Search recipes" data-i18n-placeholder="searchPlaceholder" data-i18n-aria="searchRecipes">
+          </label>
+          <button class="primary-button" type="submit" data-i18n="search">Search</button>
+        </form>
+        <button class="quiet-button" id="favoritesFilter" type="button" aria-pressed="false">♡ <span data-i18n="favorites">Favorites</span></button>
+        <button class="primary-button" id="surpriseButton" type="button"><span data-i18n="surprise">Surprise me</span> ✨</button>
+        <p class="search-status" id="searchStatus" role="status" aria-live="polite" data-i18n="searchHelp">Search the local recipe collection by food, country, or ingredient.</p>
+      </section>
+
+      <section class="explore-grid" aria-label="Explore countries" data-i18n-aria="exploreCountries">
+        <div class="panel">
+          <div class="panel-heading">
+            <div><h2 data-i18n="chooseCountry">Choose a country</h2><p data-i18n="tapMarker">Tap a marker to see its dishes.</p></div>
+            <span aria-hidden="true">🧭</span>
+          </div>
+          <div class="map-wrap">
+            <div class="map-stage">
+              <img class="world-map-art" src="./world-map.svg" alt="" aria-hidden="true">
+              <svg class="world-map" viewBox="0 0 900 450" role="group" aria-labelledby="mapTitle mapDescription">
+                <title id="mapTitle" data-i18n="mapTitle">Interactive world map</title>
+                <desc id="mapDescription" data-i18n="mapDescription">Country boundaries from Natural Earth with selectable country markers. Choose a marker to see traditional foods.</desc>
+                <g id="mapPins"></g>
+              </svg>
+            </div>
+          </div>
+          <div class="map-caption" data-i18n="mapCaption">Tap a country marker.</div>
+        </div>
+        <aside class="panel country-list" aria-live="polite">
+          <div class="country-head" id="countryHeader"></div>
+          <div class="country-recipes" id="countryRecipes"></div>
+        </aside>
+      </section>
+
+      <section aria-labelledby="collectionHeading">
+        <div class="section-heading">
+          <div><h2 id="collectionHeading" data-i18n="collectionTitle">Explore the collection</h2><p id="collectionCount" data-i18n="collectionHint">Traditional dishes from around the world.</p></div>
+        </div>
+        <div class="filter-row" id="filterRow" aria-label="Recipe filters" data-i18n-aria="recipeFilters"></div>
+        <div class="meal-grid" id="mealGrid" aria-live="polite"></div>
+      </section>
+    </main>
+    <footer class="footer"><strong>MealMate</strong> · <span data-i18n="footerText">A little taste of everywhere. Calories are estimates per serving and can vary by ingredients and portion size.</span> · <a href="./PHOTO_CREDITS.html" data-i18n="photoCredits">Photo credits</a></footer>
+  </div>
+
+  <dialog id="recipeDialog" aria-labelledby="dialogRecipeName">
+    <div class="dialog-content" id="dialogContent"></div>
+  </dialog>
+
+  <script>
+    "use strict";
+
+    const localeText = {
+      en: {
+        home:"MealMate home", brandTag:"World kitchen", switchTheme:"Switch theme", switchDark:"Switch to dark theme", switchLight:"Switch to light theme",
+        eyebrow:"Good food, shared everywhere", heroTitle:"Taste the world.", heroText:"Pick a country. Find a dish. Cook at home.",
+        noteTitle:"Cook at home, anywhere. 🌍", noteText:"Local recipes · works offline", findRecipes:"Find recipes",
+        searchPlaceholder:"Food, country, ingredient...", searchRecipes:"Search recipes", search:"Search", favorites:"Favorites",
+        surprise:"Surprise me", searchHelp:"Search the local recipe collection by food, country, or ingredient.",
+        exploreCountries:"Explore countries", chooseCountry:"Choose a country", tapMarker:"Tap a marker to see its dishes.",
+        mapTitle:"Interactive world map", mapDescription:"Country boundaries from Natural Earth with selectable country markers. Choose a marker to see traditional foods.",
+        mapCaption:"Tap a country marker.", collectionTitle:"Explore the collection",
+        collectionHint:"Traditional dishes from around the world.", recipeFilters:"Recipe filters",
+        all:"All", veg:"Veg", breakfast:"Breakfast", rice:"Rice", pasta:"Pasta", soup:"Soup", salad:"Salad",
+        baked:"Baked", noodles:"Noodles", snack:"Snack", dishes:"Dishes", recipe:"Recipe", ingredients:"Ingredients",
+        howTo:"How to make it", calorieNote:"Calories are approximate estimates per serving, not medical or nutrition advice. Actual values vary with ingredient brands, substitutions, and portion sizes.",
+        done:"Done", saveFavorite:"Save favorite", saved:"Saved", close:"Close recipe", footerText:"A little taste of everywhere. Calories are estimates per serving and can vary by ingredients and portion size.",
+        photoCredits:"Photo credits", minutes:"min", serving:"1 serving", perServing:"per serving",
+        count:"{count} dishes · kcal per serving", searchPrompt:"Search recipes, countries, or ingredients.",
+        results:"{count} results for “{query}”.", noMatch:"No match for “{query}”. Try another word.",
+        empty:"No matches. Try another search or filter.", openRecipe:"Open {name}, approximately {kcal} calories per serving",
+        noChoices:"No matching dishes to choose from. Clear your search or filters and try again.",
+        comfortFood:"Comfort food", streetFood:"Street food", bread:"Bread", dessert:"Dessert",
+        favoritesAria:"Favorites", language:"Language", calories:"Calories are approximate."
+      },
+      es: {
+        home:"Inicio de MealMate", brandTag:"Cocina mundial", switchTheme:"Cambiar tema", switchDark:"Cambiar al tema oscuro", switchLight:"Cambiar al tema claro",
+        eyebrow:"Buena comida para compartir", heroTitle:"Prueba el mundo.", heroText:"Elige un país. Encuentra un plato. Cocínalo en casa.",
+        noteTitle:"Cocina en casa, estés donde estés. 🌍", noteText:"Recetas locales · funciona sin conexión", findRecipes:"Buscar recetas",
+        searchPlaceholder:"Comida, país, ingrediente...", searchRecipes:"Buscar recetas", search:"Buscar", favorites:"Favoritos",
+        surprise:"Sorpréndeme", searchHelp:"Busca platos, países o ingredientes en la colección local.",
+        exploreCountries:"Explorar países", chooseCountry:"Elige un país", tapMarker:"Toca un marcador para ver sus platos.",
+        mapTitle:"Mapa interactivo del mundo", mapDescription:"Fronteras de Natural Earth con marcadores seleccionables. Elige uno para ver comidas tradicionales.",
+        mapCaption:"Toca el marcador de un país.", collectionTitle:"Explora la colección",
+        collectionHint:"Platos tradicionales de todo el mundo.", recipeFilters:"Filtros de recetas",
+        all:"Todo", veg:"Veg.", breakfast:"Desayuno", rice:"Arroz", pasta:"Pasta", soup:"Sopa", salad:"Ensalada",
+        baked:"Horneado", noodles:"Fideos", snack:"Aperitivo", dishes:"Platos", recipe:"Receta", ingredients:"Ingredientes",
+        howTo:"Preparación", calorieNote:"Las calorías son estimaciones por porción, no consejos médicos ni nutricionales. Pueden variar según los ingredientes y las cantidades.",
+        done:"Listo", saveFavorite:"Guardar favorito", saved:"Guardado", close:"Cerrar receta", footerText:"Un pequeño sabor de todas partes. Las calorías son aproximadas por porción y pueden variar.",
+        photoCredits:"Créditos de fotos", minutes:"min", serving:"1 porción", perServing:"por porción",
+        count:"{count} platos · kcal por porción", searchPrompt:"Busca recetas, países o ingredientes.",
+        results:"{count} resultados para “{query}”.", noMatch:"No hay coincidencias para “{query}”. Prueba otra palabra.",
+        empty:"Sin resultados. Prueba otra búsqueda o filtro.", openRecipe:"Abrir {name}, aproximadamente {kcal} calorías por porción",
+        noChoices:"No hay platos que elegir. Borra la búsqueda o los filtros e inténtalo de nuevo.",
+        comfortFood:"Comida casera", streetFood:"Comida callejera", bread:"Pan", dessert:"Postre",
+        favoritesAria:"Favoritos", language:"Idioma", calories:"Las calorías son aproximadas."
+      },
+      fr: {
+        home:"Accueil MealMate", brandTag:"Cuisine du monde", switchTheme:"Changer de thème", switchDark:"Passer au thème sombre", switchLight:"Passer au thème clair",
+        eyebrow:"De bons plats à partager", heroTitle:"Goûtez le monde.", heroText:"Choisissez un pays. Trouvez un plat. Cuisinez chez vous.",
+        noteTitle:"Cuisinez chez vous, partout. 🌍", noteText:"Recettes locales · fonctionne hors ligne", findRecipes:"Trouver des recettes",
+        searchPlaceholder:"Plat, pays, ingrédient...", searchRecipes:"Rechercher des recettes", search:"Rechercher", favorites:"Favoris",
+        surprise:"Surprends-moi", searchHelp:"Recherchez des plats, pays ou ingrédients dans la collection locale.",
+        exploreCountries:"Explorer les pays", chooseCountry:"Choisissez un pays", tapMarker:"Touchez un repère pour voir ses plats.",
+        mapTitle:"Carte interactive du monde", mapDescription:"Frontières Natural Earth et repères sélectionnables. Choisissez un repère pour découvrir des plats traditionnels.",
+        mapCaption:"Touchez le repère d’un pays.", collectionTitle:"Explorer la collection",
+        collectionHint:"Des plats traditionnels du monde entier.", recipeFilters:"Filtres de recettes",
+        all:"Tout", veg:"Végé", breakfast:"Petit-déjeuner", rice:"Riz", pasta:"Pâtes", soup:"Soupe", salad:"Salade",
+        baked:"Au four", noodles:"Nouilles", snack:"En-cas", dishes:"Plats", recipe:"Recette", ingredients:"Ingrédients",
+        howTo:"Préparation", calorieNote:"Les calories sont des estimations par portion, et non un conseil médical ou nutritionnel. Elles varient selon les ingrédients et les quantités.",
+        done:"Terminé", saveFavorite:"Enregistrer", saved:"Enregistré", close:"Fermer la recette", footerText:"Un petit goût d’ailleurs. Les calories sont estimées par portion et peuvent varier.",
+        photoCredits:"Crédits photos", minutes:"min", serving:"1 portion", perServing:"par portion",
+        count:"{count} plats · kcal par portion", searchPrompt:"Recherchez des recettes, pays ou ingrédients.",
+        results:"{count} résultats pour « {query} ».", noMatch:"Aucun résultat pour « {query} ». Essayez un autre mot.",
+        empty:"Aucun résultat. Essayez une autre recherche ou un autre filtre.", openRecipe:"Ouvrir {name}, environ {kcal} calories par portion",
+        noChoices:"Aucun plat à choisir. Effacez la recherche ou les filtres et réessayez.",
+        comfortFood:"Cuisine réconfortante", streetFood:"Cuisine de rue", bread:"Pain", dessert:"Dessert",
+        favoritesAria:"Favoris", language:"Langue", calories:"Les calories sont approximatives."
+      },
+      ru: {
+        home:"Главная MealMate", brandTag:"Кухни мира", switchTheme:"Сменить тему", switchDark:"Включить тёмную тему", switchLight:"Включить светлую тему",
+        eyebrow:"Вкусная еда для всех", heroTitle:"Попробуйте мир на вкус.", heroText:"Выберите страну. Найдите блюдо. Приготовьте дома.",
+        noteTitle:"Готовьте дома где угодно. 🌍", noteText:"Местные рецепты · работает офлайн", findRecipes:"Поиск рецептов",
+        searchPlaceholder:"Блюдо, страна, ингредиент...", searchRecipes:"Искать рецепты", search:"Найти", favorites:"Избранное",
+        surprise:"Удиви меня", searchHelp:"Ищите блюда, страны и ингредиенты в локальной коллекции.",
+        exploreCountries:"Страны мира", chooseCountry:"Выберите страну", tapMarker:"Нажмите на метку, чтобы увидеть блюда.",
+        mapTitle:"Интерактивная карта мира", mapDescription:"Границы Natural Earth и интерактивные метки стран. Выберите метку, чтобы увидеть национальные блюда.",
+        mapCaption:"Нажмите на метку страны.", collectionTitle:"Коллекция блюд",
+        collectionHint:"Традиционные блюда со всего мира.", recipeFilters:"Фильтры рецептов",
+        all:"Все", veg:"Овощные", breakfast:"Завтрак", rice:"Рис", pasta:"Паста", soup:"Суп", salad:"Салат",
+        baked:"Выпечка", noodles:"Лапша", snack:"Закуска", dishes:"Блюда", recipe:"Рецепт", ingredients:"Ингредиенты",
+        howTo:"Приготовление", calorieNote:"Калорийность указана примерно на порцию и не является медицинской рекомендацией. Значение зависит от продуктов и размера порции.",
+        done:"Готово", saveFavorite:"В избранное", saved:"Сохранено", close:"Закрыть рецепт", footerText:"Немного вкуса со всего мира. Калорийность на порцию приблизительная и может отличаться.",
+        photoCredits:"Источники фото", minutes:"мин", serving:"1 порция", perServing:"на порцию",
+        count:"Блюд: {count} · ккал на порцию", searchPrompt:"Ищите рецепты, страны или ингредиенты.",
+        results:"Результатов по запросу «{query}»: {count}.", noMatch:"По запросу «{query}» ничего не найдено. Попробуйте другое слово.",
+        empty:"Ничего не найдено. Измените запрос или фильтр.", openRecipe:"Открыть {name}, примерно {kcal} ккал на порцию",
+        noChoices:"Нет подходящих блюд. Очистите поиск или фильтры и попробуйте снова.",
+        comfortFood:"Домашняя еда", streetFood:"Уличная еда", bread:"Хлеб", dessert:"Десерт",
+        favoritesAria:"Избранное", language:"Язык", calories:"Калорийность приблизительная."
+      },
+      uz: {
+        home:"MealMate bosh sahifasi", brandTag:"Jahon oshxonasi", switchTheme:"Mavzuni almashtirish", switchDark:"Qorong‘i mavzuga o‘tish", switchLight:"Yorug‘ mavzuga o‘tish",
+        eyebrow:"Mazali taomlar hamma uchun", heroTitle:"Dunyo ta’mini kashf eting.", heroText:"Mamlakatni tanlang. Taom toping. Uyda pishiring.",
+        noteTitle:"Istalgan joyda uyda pishiring. 🌍", noteText:"Mahalliy retseptlar · internetsiz ishlaydi", findRecipes:"Retseptlarni topish",
+        searchPlaceholder:"Taom, mamlakat, masalliq...", searchRecipes:"Retseptlarni qidirish", search:"Qidirish", favorites:"Sevimlilar",
+        surprise:"Tasodifiy taom", searchHelp:"Mahalliy to‘plamdan taom, mamlakat yoki masalliqlarni qidiring.",
+        exploreCountries:"Mamlakatlarni ko‘rish", chooseCountry:"Mamlakatni tanlang", tapMarker:"Taomlarni ko‘rish uchun belgini bosing.",
+        mapTitle:"Interaktiv dunyo xaritasi", mapDescription:"Natural Earth chegaralari va tanlanadigan mamlakat belgilari. Milliy taomlarni ko‘rish uchun belgini tanlang.",
+        mapCaption:"Mamlakat belgisini bosing.", collectionTitle:"Retseptlar to‘plami",
+        collectionHint:"Dunyo bo‘ylab an’anaviy taomlar.", recipeFilters:"Retsept filtrlari",
+        all:"Barchasi", veg:"Sabzavotli", breakfast:"Nonushta", rice:"Guruch", pasta:"Makaron", soup:"Sho‘rva", salad:"Salat",
+        baked:"Pishiriq", noodles:"Lag‘mon", snack:"Yengil taom", dishes:"Taomlar", recipe:"Retsept", ingredients:"Masalliqlar",
+        howTo:"Tayyorlanishi", calorieNote:"Kaloriya bir porsiya uchun taxminiy hisob bo‘lib, tibbiy yoki parhez tavsiyasi emas. Miqdor masalliqlar va porsiyaga qarab o‘zgaradi.",
+        done:"Tayyor", saveFavorite:"Sevimliga saqlash", saved:"Saqlandi", close:"Retseptni yopish", footerText:"Dunyoning turli ta’mlaridan. Kaloriya bir porsiya uchun taxminiy.",
+        photoCredits:"Rasm manbalari", minutes:"daq", serving:"1 porsiya", perServing:"bir porsiyada",
+        count:"{count} taom · bir porsiyada kkal", searchPrompt:"Retsept, mamlakat yoki masalliqlarni qidiring.",
+        results:"“{query}” bo‘yicha {count} ta natija.", noMatch:"“{query}” bo‘yicha natija yo‘q. Boshqa so‘zni sinab ko‘ring.",
+        empty:"Natija yo‘q. Boshqa qidiruv yoki filtrni sinab ko‘ring.", openRecipe:"{name} retseptini ochish, bir porsiyada taxminan {kcal} kkal",
+        noChoices:"Tanlash uchun mos taom yo‘q. Qidiruv yoki filtrlarni tozalab, qayta urinib ko‘ring.",
+        comfortFood:"Uy taomlari", streetFood:"Ko‘cha taomlari", bread:"Non", dessert:"Shirinlik",
+        favoritesAria:"Sevimlilar", language:"Til", calories:"Kaloriya taxminiy."
+      },
+      ar: {
+        home:"الصفحة الرئيسية MealMate", brandTag:"مطبخ العالم", switchTheme:"تغيير المظهر", switchDark:"التبديل إلى المظهر الداكن", switchLight:"التبديل إلى المظهر الفاتح",
+        eyebrow:"طعام لذيذ للجميع", heroTitle:"تذوّق العالم.", heroText:"اختر بلدًا. اعثر على طبق. اطهه في المنزل.",
+        noteTitle:"اطهُ في المنزل أينما كنت. 🌍", noteText:"وصفات محلية · تعمل دون اتصال", findRecipes:"ابحث عن وصفات",
+        searchPlaceholder:"طعام، بلد، مكوّن...", searchRecipes:"ابحث عن وصفات", search:"بحث", favorites:"المفضلة",
+        surprise:"فاجئني", searchHelp:"ابحث عن الأطباق أو البلدان أو المكونات في المجموعة المحلية.",
+        exploreCountries:"استكشف البلدان", chooseCountry:"اختر بلدًا", tapMarker:"اضغط على علامة لرؤية أطباقه.",
+        mapTitle:"خريطة تفاعلية للعالم", mapDescription:"حدود Natural Earth وعلامات قابلة للاختيار. اختر علامة لرؤية الأطعمة التقليدية.",
+        mapCaption:"اضغط على علامة بلد.", collectionTitle:"استكشف المجموعة",
+        collectionHint:"أطباق تقليدية من أنحاء العالم.", recipeFilters:"تصفية الوصفات",
+        all:"الكل", veg:"نباتي", breakfast:"فطور", rice:"أرز", pasta:"معكرونة", soup:"حساء", salad:"سلطة",
+        baked:"مخبوزات", noodles:"نودلز", snack:"وجبة خفيفة", dishes:"أطباق", recipe:"الوصفة", ingredients:"المكونات",
+        howTo:"طريقة التحضير", calorieNote:"السعرات تقديرية لكل حصة وليست نصيحة طبية أو غذائية. تختلف حسب المكونات وحجم الحصة.",
+        done:"تم", saveFavorite:"حفظ في المفضلة", saved:"تم الحفظ", close:"إغلاق الوصفة", footerText:"نكهة صغيرة من كل مكان. السعرات تقديرية لكل حصة وقد تختلف.",
+        photoCredits:"مصادر الصور", minutes:"دقيقة", serving:"حصة واحدة", perServing:"لكل حصة",
+        count:"{count} أطباق · سعرة لكل حصة", searchPrompt:"ابحث عن وصفات أو بلدان أو مكونات.",
+        results:"عدد النتائج لـ «{query}»: {count}.", noMatch:"لا توجد نتائج لـ «{query}». جرّب كلمة أخرى.",
+        empty:"لا توجد نتائج. جرّب بحثًا أو تصفية أخرى.", openRecipe:"افتح {name}، نحو {kcal} سعرة لكل حصة",
+        noChoices:"لا توجد أطباق مطابقة. امسح البحث أو عوامل التصفية وحاول مجددًا.",
+        comfortFood:"طعام منزلي", streetFood:"طعام الشارع", bread:"خبز", dessert:"حلوى",
+        favoritesAria:"المفضلة", language:"اللغة", calories:"السعرات تقديرية."
+      },
+      hi: {
+        home:"MealMate होम", brandTag:"दुनिया का रसोईघर", switchTheme:"थीम बदलें", switchDark:"डार्क थीम चुनें", switchLight:"लाइट थीम चुनें",
+        eyebrow:"सबके लिए स्वादिष्ट खाना", heroTitle:"दुनिया का स्वाद लें।", heroText:"देश चुनें। पकवान खोजें। घर पर बनाएँ।",
+        noteTitle:"कहीं भी घर पर पकाएँ। 🌍", noteText:"स्थानीय रेसिपी · ऑफ़लाइन काम करती हैं", findRecipes:"रेसिपी खोजें",
+        searchPlaceholder:"खाना, देश, सामग्री...", searchRecipes:"रेसिपी खोजें", search:"खोजें", favorites:"पसंदीदा",
+        surprise:"कुछ नया चुनें", searchHelp:"स्थानीय संग्रह में पकवान, देश या सामग्री खोजें।",
+        exploreCountries:"देश देखें", chooseCountry:"देश चुनें", tapMarker:"पकवान देखने के लिए निशान दबाएँ।",
+        mapTitle:"इंटरैक्टिव विश्व मानचित्र", mapDescription:"Natural Earth की सीमाएँ और चुनने योग्य देश-चिह्न। पारंपरिक भोजन देखने के लिए चिह्न चुनें।",
+        mapCaption:"देश के चिह्न पर दबाएँ।", collectionTitle:"संग्रह देखें",
+        collectionHint:"दुनिया भर के पारंपरिक पकवान।", recipeFilters:"रेसिपी फ़िल्टर",
+        all:"सभी", veg:"शाकाहारी", breakfast:"नाश्ता", rice:"चावल", pasta:"पास्ता", soup:"सूप", salad:"सलाद",
+        baked:"बेक्ड", noodles:"नूडल्स", snack:"स्नैक", dishes:"पकवान", recipe:"रेसिपी", ingredients:"सामग्री",
+        howTo:"बनाने का तरीका", calorieNote:"कैलोरी प्रति सर्विंग का अनुमान है, चिकित्सा या पोषण सलाह नहीं। वास्तविक मात्रा सामग्री और हिस्से के अनुसार बदलती है।",
+        done:"हो गया", saveFavorite:"पसंदीदा में सहेजें", saved:"सहेजा गया", close:"रेसिपी बंद करें", footerText:"दुनिया भर के स्वाद की एक झलक। कैलोरी प्रति सर्विंग का अनुमान है और बदल सकती है।",
+        photoCredits:"फ़ोटो श्रेय", minutes:"मिनट", serving:"1 सर्विंग", perServing:"प्रति सर्विंग",
+        count:"{count} पकवान · प्रति सर्विंग kcal", searchPrompt:"रेसिपी, देश या सामग्री खोजें।",
+        results:"“{query}” के लिए {count} परिणाम।", noMatch:"“{query}” के लिए कुछ नहीं मिला। दूसरा शब्द आज़माएँ।",
+        empty:"कुछ नहीं मिला। दूसरी खोज या फ़िल्टर आज़माएँ।", openRecipe:"{name} खोलें, लगभग {kcal} कैलोरी प्रति सर्विंग",
+        noChoices:"चुनने के लिए मेल खाता पकवान नहीं है। खोज या फ़िल्टर हटाकर फिर कोशिश करें।",
+        comfortFood:"आरामदायक खाना", streetFood:"स्ट्रीट फ़ूड", bread:"ब्रेड", dessert:"मिठाई",
+        favoritesAria:"पसंदीदा", language:"भाषा", calories:"कैलोरी अनुमानित हैं।"
+      },
+      tr: {
+        home:"MealMate ana sayfa", brandTag:"Dünya mutfağı", switchTheme:"Temayı değiştir", switchDark:"Koyu temaya geç", switchLight:"Açık temaya geç",
+        eyebrow:"Herkes için güzel yemekler", heroTitle:"Dünyanın tadına bak.", heroText:"Bir ülke seç. Bir yemek bul. Evde pişir.",
+        noteTitle:"Her yerde evde pişir. 🌍", noteText:"Yerel tarifler · çevrimdışı çalışır", findRecipes:"Tarif bul",
+        searchPlaceholder:"Yemek, ülke, malzeme...", searchRecipes:"Tarif ara", search:"Ara", favorites:"Favoriler",
+        surprise:"Bana sürpriz yap", searchHelp:"Yerel koleksiyonda yemek, ülke veya malzeme ara.",
+        exploreCountries:"Ülkeleri keşfet", chooseCountry:"Bir ülke seç", tapMarker:"Yemeklerini görmek için işarete dokun.",
+        mapTitle:"Etkileşimli dünya haritası", mapDescription:"Natural Earth sınırları ve seçilebilir ülke işaretleri. Geleneksel yemekleri görmek için bir işaret seç.",
+        mapCaption:"Bir ülke işaretine dokun.", collectionTitle:"Koleksiyonu keşfet",
+        collectionHint:"Dünyanın dört bir yanından geleneksel yemekler.", recipeFilters:"Tarif filtreleri",
+        all:"Tümü", veg:"Sebze", breakfast:"Kahvaltı", rice:"Pilav", pasta:"Makarna", soup:"Çorba", salad:"Salata",
+        baked:"Fırın", noodles:"Erişte", snack:"Atıştırmalık", dishes:"Yemekler", recipe:"Tarif", ingredients:"Malzemeler",
+        howTo:"Yapılışı", calorieNote:"Kalori değerleri porsiyon başına yaklaşık tahmindir; tıbbi veya beslenme önerisi değildir. Malzemelere ve porsiyona göre değişebilir.",
+        done:"Bitti", saveFavorite:"Favorilere kaydet", saved:"Kaydedildi", close:"Tarifi kapat", footerText:"Dünyanın her yerinden küçük bir lezzet. Kalori değerleri porsiyon başına tahminidir ve değişebilir.",
+        photoCredits:"Fotoğraf kaynakları", minutes:"dk", serving:"1 porsiyon", perServing:"porsiyon başına",
+        count:"{count} yemek · porsiyon başına kcal", searchPrompt:"Tarif, ülke veya malzeme ara.",
+        results:"“{query}” için {count} sonuç.", noMatch:"“{query}” için sonuç yok. Başka bir sözcük dene.",
+        empty:"Sonuç yok. Başka bir arama veya filtre dene.", openRecipe:"{name} tarifini aç, porsiyon başına yaklaşık {kcal} kalori",
+        noChoices:"Seçilecek eşleşen yemek yok. Aramayı veya filtreleri temizleyip tekrar dene.",
+        comfortFood:"Ev yemeği", streetFood:"Sokak lezzetleri", bread:"Ekmek", dessert:"Tatlı",
+        favoritesAria:"Favoriler", language:"Dil", calories:"Kalori değerleri tahminidir."
+      }
+    };
+
+    const localizedRecipeNames = {
+      es: ["Macarrones con queso al horno","Panqueques de suero de leche","Tacos de pollo","Guacamole clásico","Ratatouille","Crêpes francesas sencillas","Espaguetis a la carbonara","Pizza Margherita","Moussaka griega sencilla","Ensalada griega tradicional","Menemen","Sopa turca de lentejas rojas","Plov uzbeko","Samsa uzbeka al horno","Chana masala","Dal tadka","Arroz frito con verduras","Mapo tofu suave","Onigiri de salmón","Sopa de miso sencilla","Pad thai sencillo","Curry verde tailandés de verduras","Misir wot","Pan plano estilo injera","Paella española sencilla","Tortilla española de patatas","Feijoada rápida","Pão de queijo","Tagine marroquí de pollo","Cuscús marroquí de verduras","Pastel de carne australiano","Pavlovas individuales","Arroz jollof nigeriano","Sopa de espinacas estilo egusi","Poutine","Tartaletas canadienses de mantequilla"],
+      fr: ["Macaronis au fromage gratinés","Pancakes au babeurre","Tacos au poulet","Guacamole classique","Ratatouille","Crêpes françaises simples","Spaghetti à la carbonara","Pizza Margherita","Moussaka grecque facile","Salade grecque traditionnelle","Menemen","Soupe turque de lentilles corail","Plov ouzbek","Samsa ouzbèke au four","Chana masala","Dal tadka","Riz sauté aux légumes","Mapo tofu doux","Onigiri au saumon","Soupe miso simple","Pad thaï facile","Curry vert thaï aux légumes","Misir wot","Galette façon injera","Paella espagnole facile","Tortilla espagnole aux pommes de terre","Feijoada rapide","Pão de queijo","Tajine marocain au poulet","Couscous marocain aux légumes","Tourte australienne au bœuf","Mini-pavlovas","Riz jollof nigérian","Soupe d’épinards façon egusi","Poutine","Tartelettes canadiennes au beurre"],
+      ru: ["Запечённые макароны с сыром","Пышные оладьи на пахте","Тако с курицей","Классический гуакамоле","Рататуй","Простые французские крепы","Спагетти карбонара","Пицца «Маргарита»","Простая греческая мусака","Греческий деревенский салат","Менемен","Турецкий суп из красной чечевицы","Узбекский плов","Узбекская самса из духовки","Чана масала","Дал тадка","Жареный рис с овощами","Мягкий мапо тофу","Онигири с лососем","Простой суп мисо","Простой пад тай","Тайское зелёное карри с овощами","Мисир вот","Лепёшка в стиле инджеры","Простая испанская паэлья","Испанская картофельная тортилья","Быстрая фейжоада","Пао-де-кейжо","Марокканский тажин с курицей","Марокканский кускус с овощами","Австралийский мясной пирог","Мини-павловы","Нигерийский рис джоллоф","Суп из шпината в стиле эгуси","Путин","Канадские масляные тарталетки"],
+      uz: ["Pishloqli makaron zapekankasi","Qatiqli quymoqlar","Tovuqli tako","Klassik guakamole","Ratatuy","Oddiy fransuz kreplari","Spagetti karbonara","Margarita pitsasi","Oddiy yunon mussakasi","Yunoncha qishloq salati","Menemen","Turkcha qizil yasmiq sho‘rvasi","O‘zbek palovi","O‘zbek somsasi","Chana masala","Dal tadka","Sabzavotli qovurilgan guruch","Yumshoq mapo tofu","Lososli onigiri","Oddiy miso sho‘rvasi","Oddiy pad tay","Taycha yashil sabzavotli karri","Misir vot","Injera uslubidagi non","Oddiy ispan paelyasi","Ispancha kartoshkali tortilla","Tez feijoada","Pão de queijo","Marokashcha tovuqli tajin","Marokashcha sabzavotli kuskus","Avstraliya go‘shtli pirogi","Kichik pavlovalar","Nigeriya jollof guruchi","Egusi uslubidagi ismaloq sho‘rvasi","Putin","Kanada sariyog‘li tartaletkalari"],
+      ar: ["معكرونة بالجبن مخبوزة","فطائر اللبن الرائب","تاكو الدجاج","غواكامولي كلاسيكي","راتاتوي","كريب فرنسي بسيط","سباغيتي كاربونارا","بيتزا مارغريتا","مسقعة يونانية سهلة","سلطة القرية اليونانية","منمن","شوربة العدس الأحمر التركية","بلوف أوزبكي","سمسا أوزبكية مخبوزة","تشانا ماسالا","دال تادكا","أرز مقلي بالخضار","مابو توفو خفيف","أونيغيري بالسلمون","شوربة ميسو بسيطة","باد تاي سهل","كاري أخضر تايلندي بالخضار","مسير ووت","خبز على طريقة إنجيرا","باييّا إسبانية سهلة","تورتيلا البطاطس الإسبانية","فيجوادا سريعة","باو دي كيجو","طاجين دجاج مغربي","كسكس مغربي بالخضار","فطيرة لحم أسترالية","بافلوفا صغيرة","أرز جولوف نيجيري","شوربة سبانخ على طريقة إيجوسي","بوتين","تارت الزبدة الكندي"],
+      hi: ["बेक्ड मैकरोनी और चीज़","छाछ के पैनकेक","चिकन टैको","क्लासिक ग्वाकामोले","रैटाटुई","आसान फ्रेंच क्रेप","स्पेगेटी कार्बोनारा","मार्गरीटा पिज़्ज़ा","आसान ग्रीक मूसाका","ग्रीक गाँव का सलाद","मेनमेन","तुर्की लाल मसूर का सूप","उज़्बेक पुलाव","बेक्ड उज़्बेक समोसा","चना मसाला","दाल तड़का","सब्ज़ियों वाला फ्राइड राइस","हल्का मापो टोफू","सैल्मन ओनिगिरी","आसान मिसो सूप","आसान पैड थाई","थाई हरी सब्ज़ी करी","मिसिर वॉट","इंजेरा शैली की रोटी","आसान स्पैनिश पाएया","स्पैनिश आलू टॉर्टिला","झटपट फेइजोआदा","पाओ दी केजो","मोरक्कन चिकन टैजीन","मोरक्कन सब्ज़ी कूसकूस","ऑस्ट्रेलियाई मीट पाई","मिनी पावलोवा","नाइजीरियन जोलोफ़ चावल","एगुसी शैली का पालक सूप","पुटीन","कनाडाई बटर टार्ट"],
+      tr: ["Fırında makarna ve peynir","Yayık ayranlı pankek","Tavuklu taco","Klasik guacamole","Ratatuy","Kolay Fransız krebi","Spagetti karbonara","Margherita pizza","Kolay Yunan musakkası","Yunan köy salatası","Menemen","Türk kırmızı mercimek çorbası","Özbek pilavı","Fırında Özbek samsası","Chana masala","Dal tadka","Sebzeli kızarmış pilav","Hafif mapo tofu","Somonlu onigiri","Kolay miso çorbası","Kolay pad thai","Tay usulü yeşil sebze körisi","Misir wot","İnjera usulü gözleme","Kolay İspanyol paellası","İspanyol patatesli tortilla","Kolay feijoada","Pão de queijo","Fas usulü tavuk tajin","Fas usulü sebzeli kuskus","Avustralya etli böreği","Mini pavlovalar","Nijerya jollof pilavı","Egusi usulü ıspanak çorbası","Poutine","Kanada tereyağlı tartı"]
+    };
+
+    const countries = [
+      { id: "us", code: "US", coordinates: [-98.6, 39.8], name: "United States", flag: "🇺🇸", region: "North America", note: "Comfort food and home-style favorites" },
+      { id: "mx", code: "MX", coordinates: [-102, 23.6], name: "Mexico", flag: "🇲🇽", region: "North America", note: "Bright flavors, corn, chiles, and fresh herbs" },
+      { id: "fr", code: "FR", coordinates: [2.2, 46.2], name: "France", flag: "🇫🇷", region: "Europe", note: "Rustic countryside cooking and café classics" },
+      { id: "it", code: "IT", coordinates: [12.5, 42.5], name: "Italy", flag: "🇮🇹", region: "Europe", note: "Beloved pasta and pizza from the Italian table" },
+      { id: "gr", code: "GR", coordinates: [22, 39], name: "Greece", flag: "🇬🇷", region: "Europe", note: "Olive oil, vegetables, herbs, and warm spices" },
+      { id: "tr", code: "TR", coordinates: [35.2, 39], name: "Türkiye", flag: "🇹🇷", region: "Europe & Asia", note: "A crossroads of fragrant, generous food traditions" },
+      { id: "uz", code: "UZ", coordinates: [64.6, 41.3], name: "Uzbekistan", flag: "🇺🇿", region: "Central Asia", note: "Hearty rice, bread, and spices from the Silk Road" },
+      { id: "in", code: "IN", coordinates: [78.9, 22.6], name: "India", flag: "🇮🇳", region: "South Asia", note: "Layered spices and comforting vegetarian classics" },
+      { id: "cn", code: "CN", coordinates: [104, 35], name: "China", flag: "🇨🇳", region: "East Asia", note: "Savory, aromatic dishes with a balance of textures" },
+      { id: "jp", code: "JP", coordinates: [138, 37], name: "Japan", flag: "🇯🇵", region: "East Asia", note: "Thoughtful, balanced dishes with delicate flavors" },
+      { id: "th", code: "TH", coordinates: [101, 15.9], name: "Thailand", flag: "🇹🇭", region: "Southeast Asia", note: "A lively balance of sweet, sour, salty, and spicy" },
+      { id: "et", code: "ET", coordinates: [40.5, 9.1], name: "Ethiopia", flag: "🇪🇹", region: "East Africa", note: "Spiced stews and injera" },
+      { id: "es", code: "ES", coordinates: [-3.7, 40.4], name: "Spain", flag: "🇪🇸", region: "Europe", note: "Rice, tapas, and Mediterranean flavors" },
+      { id: "br", code: "BR", coordinates: [-52, -10], name: "Brazil", flag: "🇧🇷", region: "South America", note: "Beans, stews, and cheese breads" },
+      { id: "ma", code: "MA", coordinates: [-6, 31.8], name: "Morocco", flag: "🇲🇦", region: "North Africa", note: "Warm spices and slow-cooked dishes" },
+      { id: "au", code: "AU", coordinates: [134, -25], name: "Australia", flag: "🇦🇺", region: "Oceania", note: "Easy classics and sweet treats" },
+      { id: "ng", code: "NG", coordinates: [8, 9.1], name: "Nigeria", flag: "🇳🇬", region: "West Africa", note: "Peppery rice and hearty soups" },
+      { id: "ca", code: "CA", coordinates: [-106, 56], name: "Canada", flag: "🇨🇦", region: "North America", note: "Cozy comfort food and maple sweets" }
+    ];
+
+    const recipes = [
+      { id:"us-mac", country:"us", name:"Baked Mac and Cheese", emoji:"🧀", description:"Creamy macaroni baked under a golden cheese crust.", kcal:520, time:45, category:"Comfort food", ingredients:["250 g elbow macaroni","2 tbsp butter","2 tbsp flour","2 cups milk","1½ cups cheddar, grated","¼ tsp paprika","Salt and black pepper"], steps:["Heat the oven to 190°C / 375°F. Cook macaroni until just tender, then drain.","Melt butter in a saucepan. Stir in flour for one minute, then gradually whisk in milk until smooth and thickened.","Remove from heat and stir in cheddar, paprika, salt, and pepper. Fold in the macaroni.","Transfer to a baking dish and bake for 20 minutes, until bubbling and golden."] },
+      { id:"us-pancakes", country:"us", name:"Buttermilk Pancakes", emoji:"🥞", description:"Fluffy breakfast pancakes served warm with fruit or syrup.", kcal:360, time:25, category:"Breakfast", ingredients:["1½ cups all-purpose flour","1 tbsp sugar","1 tsp baking powder","½ tsp baking soda","1¼ cups buttermilk","1 egg","2 tbsp melted butter"], steps:["Whisk flour, sugar, baking powder, and baking soda in a bowl.","In another bowl whisk buttermilk, egg, and melted butter. Pour into the dry ingredients and stir just until combined.","Warm a lightly buttered pan over medium heat. Pour in small rounds of batter.","Flip when bubbles appear on top; cook the other side until golden."] },
+      { id:"mx-tacos", country:"mx", name:"Chicken Tacos", emoji:"🌮", description:"Warm corn tortillas filled with spiced chicken and fresh toppings.", kcal:410, time:35, category:"Street food", ingredients:["400 g chicken breast, sliced","1 tsp ground cumin","1 tsp paprika","½ tsp chili powder","8 small corn tortillas","1 lime","½ small red onion, diced","Fresh cilantro"], steps:["Toss the chicken with cumin, paprika, chili, salt, and a squeeze of lime.","Cook in a hot skillet with a little oil for 6–8 minutes, turning until cooked through.","Warm the tortillas in a dry pan. Fill with chicken, onion, and cilantro.","Serve with lime wedges and add salsa or avocado if you like."] },
+      { id:"mx-guac", country:"mx", name:"Classic Guacamole", emoji:"🥑", description:"A fresh avocado dip with lime, tomato, onion, and cilantro.", kcal:190, time:15, category:"Snack", ingredients:["2 ripe avocados","1 small tomato, diced","2 tbsp finely diced red onion","1 tbsp chopped cilantro","Juice of 1 lime","Salt to taste"], steps:["Scoop the avocados into a bowl and mash with a fork, leaving a little texture.","Fold in tomato, onion, cilantro, and lime juice.","Season with salt, taste, and adjust the lime.","Serve right away with tortilla chips or alongside tacos."] },
+      { id:"fr-ratatouille", country:"fr", name:"Ratatouille", emoji:"🍲", description:"A colorful Provençal vegetable stew with herbs and tomato.", kcal:230, time:55, category:"Vegetarian", ingredients:["1 small eggplant, cubed","1 zucchini, cubed","1 red bell pepper, chopped","1 onion, chopped","2 tomatoes, chopped","2 tbsp olive oil","1 tsp dried thyme","1 garlic clove, minced"], steps:["Warm olive oil in a large pan. Cook onion and pepper for 5 minutes until soft.","Add eggplant and zucchini; cook for another 6 minutes, stirring occasionally.","Stir in tomatoes, garlic, thyme, salt, and pepper.","Cover and simmer gently for 25–30 minutes, until the vegetables are tender."] },
+      { id:"fr-crepes", country:"fr", name:"Simple French Crêpes", emoji:"🥞", description:"Thin, tender crêpes ready for sweet or savory fillings.", kcal:280, time:30, category:"Breakfast", ingredients:["1 cup all-purpose flour","2 eggs","1¼ cups milk","1 tbsp melted butter","1 tsp sugar (optional)","Pinch of salt"], steps:["Whisk flour, eggs, milk, melted butter, sugar, and salt until smooth.","Rest the batter for 15 minutes if time allows.","Pour a thin layer into a lightly buttered warm pan, tilting to spread.","Cook until the edge lifts, flip, and cook briefly on the other side."] },
+      { id:"it-carbonara", country:"it", name:"Spaghetti Carbonara", emoji:"🍝", description:"Silky pasta with egg, hard cheese, and crisp pancetta.", kcal:570, time:25, category:"Pasta", ingredients:["200 g spaghetti","100 g pancetta, diced","2 eggs","½ cup finely grated Pecorino or Parmesan","Black pepper","Salt"], steps:["Boil the spaghetti in salted water until al dente. Reserve a cup of pasta water.","Cook pancetta in a skillet until crisp, then turn off the heat.","Beat eggs with the grated cheese and plenty of black pepper.","Toss hot drained pasta with pancetta. Off the heat, stir in the egg mixture, loosening with pasta water until glossy."] },
+      { id:"it-pizza", country:"it", name:"Margherita Pizza", emoji:"🍕", description:"A classic tomato, mozzarella, and basil pizza.", kcal:460, time:35, category:"Baked", ingredients:["1 ready-made pizza dough","½ cup tomato passata","150 g mozzarella, torn","6 fresh basil leaves","1 tbsp olive oil","Pinch of salt"], steps:["Heat the oven as hot as it will go, ideally 240°C / 465°F, with a tray inside.","Stretch the dough on baking paper. Spread a thin layer of passata and season lightly.","Add mozzarella and a drizzle of olive oil.","Bake 8–12 minutes until the crust is browned. Finish with basil."] },
+      { id:"gr-moussaka", country:"gr", name:"Easy Greek Moussaka", emoji:"🍲", description:"Layers of eggplant, warmly spiced tomato, and creamy topping.", kcal:490, time:75, category:"Baked", ingredients:["1 large eggplant, sliced","250 g ground lamb or lentils","1 small onion, diced","1 cup crushed tomatoes","½ tsp cinnamon","1 cup Greek yogurt","1 egg","¼ cup grated cheese"], steps:["Heat the oven to 200°C / 400°F. Brush eggplant slices with oil and bake 20 minutes, turning once.","Cook onion and lamb (or lentils) in a pan until browned. Add tomatoes, cinnamon, salt, and simmer 10 minutes.","Whisk yogurt with egg and half the cheese. Layer eggplant and tomato filling in a small baking dish.","Spread the yogurt topping, add remaining cheese, and bake 25–30 minutes until golden."] },
+      { id:"gr-salad", country:"gr", name:"Greek Village Salad", emoji:"🥗", description:"Tomatoes, cucumber, olives, and feta with lemony olive oil.", kcal:270, time:15, category:"Salad", ingredients:["2 ripe tomatoes, cut into wedges","1 cucumber, sliced","½ red onion, thinly sliced","½ cup Kalamata olives","100 g feta","2 tbsp olive oil","1 tbsp lemon juice","Dried oregano"], steps:["Arrange tomatoes, cucumber, onion, and olives in a serving bowl.","Whisk olive oil with lemon juice, oregano, and a pinch of salt.","Pour the dressing over the vegetables and toss gently.","Top with feta and a little extra oregano."] },
+      { id:"tr-menemen", country:"tr", name:"Menemen", emoji:"🍳", description:"Soft scrambled eggs cooked with tomatoes and green peppers.", kcal:290, time:20, category:"Breakfast", ingredients:["3 eggs","2 ripe tomatoes, diced","1 green pepper, sliced","1 tbsp olive oil","½ tsp paprika","Salt and black pepper","Parsley to serve"], steps:["Warm olive oil in a skillet. Cook the pepper for 3 minutes until softened.","Add tomatoes, paprika, salt, and pepper; simmer until saucy, about 7 minutes.","Beat the eggs lightly and pour them into the pan.","Stir gently over low heat until softly set. Finish with parsley and serve with bread."] },
+      { id:"tr-soup", country:"tr", name:"Turkish Red Lentil Soup", emoji:"🥣", description:"A smooth, comforting lentil soup with cumin and lemon.", kcal:310, time:40, category:"Soup", ingredients:["1 cup red lentils, rinsed","1 small onion, chopped","1 carrot, chopped","1 tbsp olive oil","1 tsp cumin","5 cups vegetable stock","Lemon wedges","Salt and pepper"], steps:["Cook onion and carrot in olive oil for 5 minutes until softened.","Stir in lentils, cumin, stock, salt, and pepper.","Bring to a boil, then simmer for 25 minutes until lentils are soft.","Blend until smooth and serve with lemon."] },
+      { id:"uz-plov", country:"uz", name:"Uzbek Plov", emoji:"🍚", description:"A festive one-pot rice dish with carrots, cumin, and tender meat.", kcal:610, time:70, category:"Rice", ingredients:["300 g lamb or beef, cubed","1½ cups long-grain rice, rinsed","2 carrots, cut into matchsticks","1 onion, sliced","2 tbsp oil","1 tsp cumin seeds","3 cups hot water","Salt"], steps:["Heat oil in a heavy pot. Brown the meat, then add onion and cook until golden.","Add carrots, cumin, and salt; cook 5 minutes until the carrots soften slightly.","Spread rice over the top without stirring. Carefully pour in hot water to cover by about 2 cm.","Simmer uncovered until most water is absorbed. Cover, cook on low for 20 minutes, then rest 10 minutes and fluff."] },
+      { id:"uz-samsa", country:"uz", name:"Baked Uzbek Samsa", emoji:"🥟", description:"Flaky pastry parcels filled with onion and warmly spiced filling.", kcal:390, time:50, category:"Baked", ingredients:["1 sheet puff pastry, thawed","250 g ground beef or mushrooms","1 onion, finely diced","½ tsp cumin","1 egg, beaten","Black pepper","Pinch of salt"], steps:["Heat the oven to 200°C / 400°F. Mix the filling with onion, cumin, salt, and pepper.","Cut pastry into 6 squares and place a spoonful of filling in each center.","Fold the corners together to form a triangle and press the edges to seal.","Brush with egg and bake 25–30 minutes until deeply golden and cooked through."] },
+      { id:"in-chana", country:"in", name:"Chana Masala", emoji:"🍛", description:"Chickpeas simmered in a tangy tomato sauce with warming spices.", kcal:380, time:35, category:"Vegetarian", ingredients:["2 cups cooked chickpeas","1 small onion, diced","1 cup crushed tomatoes","1 tbsp oil","1 tsp cumin","1 tsp garam masala","½ tsp turmeric","½ cup water","Cilantro and lemon"], steps:["Warm oil in a saucepan. Add cumin and onion; cook until the onion is soft.","Stir in tomatoes, garam masala, turmeric, and a pinch of salt. Cook 5 minutes.","Add chickpeas and water. Simmer for 20 minutes, mashing a few chickpeas to thicken.","Serve with cilantro and lemon, with rice or flatbread."] },
+      { id:"in-dal", country:"in", name:"Dal Tadka", emoji:"🥘", description:"Comforting yellow lentils finished with a fragrant spiced oil.", kcal:340, time:40, category:"Vegetarian", ingredients:["1 cup yellow lentils, rinsed","4 cups water","½ tsp turmeric","1 tbsp ghee or oil","1 tsp cumin seeds","2 garlic cloves, sliced","1 small tomato, chopped","Fresh cilantro"], steps:["Simmer lentils with water, turmeric, and salt for 25–30 minutes until soft.","Warm ghee in a small pan. Add cumin seeds and let them sizzle briefly.","Add garlic and tomato; cook until fragrant and softened, about 3 minutes.","Pour the spiced oil over the lentils, stir, and finish with cilantro."] },
+      { id:"cn-friedrice", country:"cn", name:"Vegetable Fried Rice", emoji:"🍚", description:"Quick wok-fried rice with vegetables, egg, and a little soy.", kcal:390, time:20, category:"Rice", ingredients:["3 cups cold cooked rice","1 cup mixed diced vegetables","2 eggs, beaten","2 tbsp soy sauce","1 tbsp neutral oil","2 spring onions, sliced"], steps:["Heat half the oil in a large skillet or wok. Scramble the eggs, then transfer to a plate.","Add the remaining oil and vegetables; stir-fry for 3–4 minutes.","Add rice and break up clumps. Stir-fry until hot, then add soy sauce and the eggs.","Fold through spring onions and serve hot."] },
+      { id:"cn-mapotofu", country:"cn", name:"Mild Mapo Tofu", emoji:"🥘", description:"Soft tofu in a savory, gently spicy sauce with ginger and garlic.", kcal:330, time:25, category:"Vegetarian", ingredients:["300 g soft tofu, cubed","1 tsp oil","1 garlic clove, minced","1 tsp grated ginger","1 tbsp mild chili bean paste","1 cup vegetable stock","1 tsp cornstarch mixed with 1 tbsp water","Spring onion"], steps:["Warm oil in a pan. Cook garlic and ginger for 30 seconds until fragrant.","Stir in bean paste and stock. Bring to a gentle simmer.","Slide in tofu and simmer for 5 minutes without breaking it up.","Stir in the cornstarch mixture until the sauce thickens. Top with spring onion."] },
+      { id:"jp-onigiri", country:"jp", name:"Salmon Onigiri", emoji:"🍙", description:"Hand-shaped rice triangles with a savory salmon center.", kcal:310, time:30, category:"Rice", ingredients:["2 cups Japanese short-grain rice","120 g cooked salmon, flaked","1 tsp soy sauce","Nori sheets, cut into strips","Pinch of salt"], steps:["Rinse rice until the water runs mostly clear. Cook according to the package directions.","Mix flaked salmon with soy sauce.","Wet your hands and sprinkle with a little salt. Cup warm rice in one hand and add salmon in the center.","Shape into a triangle, gently pressing to hold. Wrap with a strip of nori."] },
+      { id:"jp-miso", country:"jp", name:"Simple Miso Soup", emoji:"🍜", description:"A light broth with tofu, seaweed, and spring onion.", kcal:110, time:15, category:"Soup", ingredients:["4 cups water","1 tsp instant dashi or vegetable stock","3 tbsp miso paste","150 g soft tofu, cubed","1 tbsp dried wakame","1 spring onion, sliced"], steps:["Warm water with dashi in a saucepan; do not let it boil hard.","Add tofu and wakame. Simmer gently for 2 minutes.","Turn off the heat. Whisk miso with a little warm broth in a cup, then stir it into the pot.","Serve right away with sliced spring onion."] },
+      { id:"th-padthai", country:"th", name:"Easy Pad Thai", emoji:"🍜", description:"Rice noodles tossed with tamarind, egg, peanuts, and lime.", kcal:480, time:30, category:"Noodles", ingredients:["180 g rice noodles","2 eggs","150 g chicken or tofu, sliced","2 tbsp tamarind paste","1 tbsp fish sauce or soy sauce","1 tsp sugar","½ cup bean sprouts","2 tbsp crushed peanuts","Lime wedges"], steps:["Soak noodles in warm water until pliable, then drain.","Mix tamarind, fish sauce (or soy), and sugar in a small bowl.","Stir-fry chicken or tofu in a hot pan until cooked. Push aside and scramble the eggs.","Add noodles and sauce; toss until tender. Fold in sprouts and peanuts, then serve with lime."] },
+      { id:"th-curry", country:"th", name:"Thai Green Vegetable Curry", emoji:"🍛", description:"A creamy coconut curry with vegetables and fragrant basil.", kcal:430, time:35, category:"Vegetarian", ingredients:["1 tbsp green curry paste","1 can (400 ml) coconut milk","2 cups mixed vegetables","1 tbsp soy sauce","1 tsp sugar","½ cup water","Fresh basil","Steamed rice to serve"], steps:["Warm a spoonful of the thick coconut milk in a pot. Stir in curry paste for one minute.","Add remaining coconut milk and water. Bring to a gentle simmer.","Add vegetables, soy sauce, and sugar. Simmer until vegetables are tender, 12–15 minutes.","Finish with basil and serve with steamed rice."] },
+      { id:"et-misir", country:"et", name:"Misir Wot", emoji:"🫘", description:"Ethiopian red lentil stew seasoned with berbere and onion.", kcal:350, time:45, category:"Vegetarian", ingredients:["1 cup red lentils, rinsed","1 onion, finely chopped","2 garlic cloves, minced","1 tbsp oil","1 tsp berbere spice (or mild chili spice)","2 cups vegetable stock","1 tbsp tomato paste","Salt"], steps:["Cook onion in oil over medium-low heat for 8 minutes until very soft and golden.","Add garlic, berbere, and tomato paste. Stir for 1 minute until fragrant.","Add lentils and stock. Bring to a boil, then simmer gently for 25–30 minutes.","Stir until thick and tender. Season to taste and serve with flatbread or injera."] },
+      { id:"et-injera", country:"et", name:"Quick Injera-Style Flatbread", emoji:"🫓", description:"Soft, tangy-inspired skillet flatbreads for scooping up stews.", kcal:220, time:25, category:"Bread", ingredients:["1 cup teff flour","½ cup all-purpose flour","1¼ cups water","¼ tsp salt","A little oil for the pan"], steps:["Whisk the flours, water, and salt until smooth. Rest for 10 minutes.","Warm a lightly oiled nonstick skillet over medium heat.","Pour in a thin layer of batter and cover. Cook until bubbles form and the top looks set.","Remove without flipping and keep warm under a clean towel."] },
+      { id:"es-paella", country:"es", name:"Easy Spanish Paella", emoji:"🥘", description:"Saffron rice with chicken and peas.", kcal:520, time:50, category:"Rice", ingredients:["1 cup short-grain rice","250 g chicken, diced","½ onion, chopped","½ red pepper, sliced","½ cup peas","2 cups stock","½ tsp paprika","Pinch of saffron"], steps:["Brown the chicken with onion and pepper in a wide pan.","Stir in rice, paprika, and saffron.","Add stock; simmer without stirring for 15 minutes.","Add peas and cook until rice is tender. Rest 5 minutes."] },
+      { id:"es-tortilla", country:"es", name:"Spanish Potato Tortilla", emoji:"🍳", description:"A thick potato and egg omelet.", kcal:360, time:35, category:"Breakfast", ingredients:["3 eggs","2 potatoes, thinly sliced","½ onion, sliced","2 tbsp olive oil","Salt"], steps:["Cook potatoes and onion in oil over medium-low heat until tender.","Beat eggs with salt, then mix with the potatoes.","Pour into a nonstick pan and cook until the base sets.","Flip carefully and cook until set through."] },
+      { id:"br-feijoada", country:"br", name:"Quick Feijoada", emoji:"🫘", description:"Brazilian black beans with smoky sausage.", kcal:490, time:55, category:"Comfort food", ingredients:["2 cups cooked black beans","150 g smoked sausage, sliced","½ onion, chopped","2 garlic cloves, minced","1 cup stock","½ tsp cumin","1 tbsp oil"], steps:["Brown sausage in a pot, then add onion and garlic.","Stir in cumin, beans, and stock.","Simmer gently for 35 minutes, stirring occasionally.","Serve hot with rice or greens."] },
+      { id:"br-pao", country:"br", name:"Pão de Queijo", emoji:"🧀", description:"Chewy Brazilian cheese rolls.", kcal:290, time:35, category:"Baked", ingredients:["1 cup tapioca starch","½ cup milk","2 tbsp oil","1 egg","½ cup grated cheese","Pinch of salt"], steps:["Heat the oven to 200°C / 400°F.","Warm milk and oil, then pour over the tapioca starch.","Cool slightly; mix in egg, cheese, and salt.","Shape small balls and bake 20–25 minutes."] },
+      { id:"ma-tagine", country:"ma", name:"Moroccan Chicken Tagine", emoji:"🍲", description:"Chicken and chickpeas with warm spices.", kcal:450, time:55, category:"Comfort food", ingredients:["300 g chicken pieces","1 cup chickpeas","1 carrot, sliced","½ onion, chopped","1 cup stock","½ tsp cumin","½ tsp cinnamon","1 tbsp oil"], steps:["Brown chicken in oil; add onion and spices.","Add carrot, chickpeas, and stock.","Cover and simmer gently for 40 minutes.","Check chicken is cooked through; serve with bread or couscous."] },
+      { id:"ma-couscous", country:"ma", name:"Moroccan Vegetable Couscous", emoji:"🍛", description:"Fluffy couscous with vegetables and chickpeas.", kcal:410, time:25, category:"Vegetarian", ingredients:["1 cup couscous","1 cup hot stock","1 cup chickpeas","1 carrot, diced","1 zucchini, diced","1 tbsp olive oil","½ tsp cumin"], steps:["Put couscous in a bowl and pour over hot stock. Cover for 5 minutes.","Cook carrot and zucchini in olive oil until tender.","Stir chickpeas and cumin into the vegetables; heat through.","Fluff couscous and serve topped with vegetables."] },
+      { id:"au-pie", country:"au", name:"Aussie Meat Pie", emoji:"🥧", description:"Savory beef pie with flaky pastry.", kcal:480, time:55, category:"Baked", ingredients:["250 g ground beef","½ onion, chopped","1 tbsp flour","¾ cup beef stock","1 sheet puff pastry","1 egg, beaten"], steps:["Brown beef and onion in a pan.","Stir in flour and stock; simmer until thick.","Spoon filling into a small baking dish and cover with pastry.","Brush with egg and bake at 200°C / 400°F for 25 minutes."] },
+      { id:"au-pavlova", country:"au", name:"Mini Pavlovas", emoji:"🍓", description:"Crisp meringue with cream and fresh berries.", kcal:340, time:80, category:"Dessert", ingredients:["2 egg whites","½ cup sugar","½ tsp cornstarch","½ tsp vinegar","½ cup whipped cream","1 cup berries"], steps:["Heat the oven to 120°C / 250°F and line a tray.","Beat egg whites until foamy; slowly add sugar and beat to stiff peaks.","Fold in cornstarch and vinegar. Make small mounds on the tray.","Bake 60 minutes, cool, then top with cream and berries."] },
+      { id:"ng-jollof", country:"ng", name:"Nigerian Jollof Rice", emoji:"🍚", description:"Tomato rice with peppers and gentle spice.", kcal:430, time:45, category:"Rice", ingredients:["1 cup long-grain rice","1 cup crushed tomatoes","½ red pepper, blended","½ onion, chopped","1½ cups stock","1 tbsp oil","½ tsp thyme","½ tsp curry powder"], steps:["Cook onion in oil until soft; stir in tomatoes and pepper.","Add thyme, curry powder, and stock; simmer 10 minutes.","Stir in rinsed rice and cover tightly.","Cook on low until rice is tender, about 25 minutes."] },
+      { id:"ng-egusi", country:"ng", name:"Egusi-Style Spinach Soup", emoji:"🥣", description:"Spinach stew with ground melon seeds.", kcal:400, time:40, category:"Soup", ingredients:["½ cup ground egusi or pumpkin seeds","2 cups chopped spinach","1 tomato, chopped","½ onion, chopped","1 cup stock","1 tbsp oil","Pinch of chili"], steps:["Cook onion and tomato in oil until soft.","Stir in ground seeds and chili.","Add stock and simmer for 15 minutes, stirring often.","Fold in spinach and cook until wilted."] },
+      { id:"ca-poutine", country:"ca", name:"Poutine", emoji:"🍟", description:"Crispy fries with cheese curds and gravy.", kcal:610, time:40, category:"Comfort food", ingredients:["3 potatoes, cut into fries","½ cup cheese curds","1 cup warm brown gravy","1 tbsp oil","Salt"], steps:["Bake or air-fry fries until crisp and golden.","Warm the gravy while the fries cook.","Pile hot fries into a bowl and add cheese curds.","Pour over warm gravy and serve right away."] },
+      { id:"ca-tarts", country:"ca", name:"Canadian Butter Tarts", emoji:"🥧", description:"Sweet mini tarts with a soft maple filling.", kcal:340, time:35, category:"Baked", ingredients:["6 small tart shells","¼ cup butter, melted","⅓ cup brown sugar","1 egg","2 tbsp maple syrup","2 tbsp raisins"], steps:["Heat the oven to 190°C / 375°F.","Whisk butter, sugar, egg, and maple syrup.","Divide raisins and filling among the tart shells.","Bake 15–18 minutes until the filling is just set."] }
+    ];
+
+    const countryById = new Map(countries.map(country => [country.id, country]));
+    const recipeById = new Map(recipes.map(recipe => [recipe.id, recipe]));
+    const filters = [
+      { label: "All", value: "All dishes" },
+      { label: "Veg", value: "Vegetarian" },
+      { label: "Breakfast", value: "Breakfast" },
+      { label: "Rice", value: "Rice" },
+      { label: "Pasta", value: "Pasta" },
+      { label: "Soup", value: "Soup" },
+      { label: "Salad", value: "Salad" },
+      { label: "Baked", value: "Baked" },
+      { label: "Noodles", value: "Noodles" },
+      { label: "Snack", value: "Snack" }
+    ];
+    const state = { country: "it", query: "", filter: "All dishes", favoritesOnly: false, favorites: new Set(), language: "en" };
+    const mapPins = document.getElementById("mapPins");
+    const countryHeader = document.getElementById("countryHeader");
+    const countryRecipes = document.getElementById("countryRecipes");
+    const mealGrid = document.getElementById("mealGrid");
+    const filterRow = document.getElementById("filterRow");
+    const searchForm = document.getElementById("searchForm");
+    const searchInput = document.getElementById("searchInput");
+    const searchStatus = document.getElementById("searchStatus");
+    const collectionCount = document.getElementById("collectionCount");
+    const recipeDialog = document.getElementById("recipeDialog");
+    const dialogContent = document.getElementById("dialogContent");
+    const languageSelect = document.getElementById("languageSelect");
+    const themeButton = document.getElementById("themeButton");
+
+    function t(key, values = {}) {
+      let text = (localeText[state.language] && localeText[state.language][key]) || localeText.en[key] || key;
+      for (const [name, value] of Object.entries(values)) text = text.replaceAll(`{${name}}`, value);
+      return text;
+    }
+
+    function localizedRecipeName(recipe) {
+      const names = localizedRecipeNames[state.language];
+      return names ? names[recipes.indexOf(recipe)] || recipe.name : recipe.name;
+    }
+
+    function localizedCountryName(country) {
+      if (typeof Intl.DisplayNames !== "function") return country.name;
+      const names = new Intl.DisplayNames([state.language], { type: "region" });
+      return names.of(country.code) || country.name;
+    }
+
+    function localizedCategory(category) {
+      const keys = {
+        "Comfort food":"comfortFood", "Street food":"streetFood", "Vegetarian":"veg",
+        "Breakfast":"breakfast", "Rice":"rice", "Pasta":"pasta", "Soup":"soup",
+        "Salad":"salad", "Baked":"baked", "Noodles":"noodles", "Snack":"snack",
+        "Bread":"bread", "Dessert":"dessert"
+      };
+      return keys[category] ? t(keys[category]) : category;
+    }
+
+    function updateThemeButton() {
+      const dark = document.documentElement.dataset.theme === "dark";
+      themeButton.textContent = dark ? "☀" : "☾";
+      themeButton.setAttribute("aria-label", t(dark ? "switchLight" : "switchDark"));
+      themeButton.setAttribute("title", t("switchTheme"));
+    }
+
+    function applyLanguage() {
+      document.documentElement.lang = state.language;
+      document.documentElement.dir = state.language === "ar" ? "rtl" : "ltr";
+      document.title = `MealMate — ${t("brandTag")}`;
+      document.querySelectorAll("[data-i18n]").forEach(element => {
+        element.textContent = t(element.dataset.i18n);
+      });
+      document.querySelectorAll("[data-i18n-aria]").forEach(element => {
+        element.setAttribute("aria-label", t(element.dataset.i18nAria));
+      });
+      document.querySelectorAll("[data-i18n-title]").forEach(element => {
+        element.setAttribute("title", t(element.dataset.i18nTitle));
+      });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach(element => {
+        element.setAttribute("placeholder", t(element.dataset.i18nPlaceholder));
+      });
+      languageSelect.setAttribute("aria-label", t("language"));
+      const favoritesButton = document.getElementById("favoritesFilter");
+      favoritesButton.textContent = `${state.favoritesOnly ? "♥" : "♡"} ${t("favorites")}`;
+      updateThemeButton();
+      renderMap();
+      renderFilters();
+      selectCountry(state.country);
+    }
+
+    function loadLanguage() {
+      try {
+        const saved = localStorage.getItem("mealmate-language");
+        if (saved && localeText[saved]) state.language = saved;
+      } catch (error) {
+        console.error("Could not load MealMate language preference:", error);
+      }
+      languageSelect.value = state.language;
+    }
+
+    function loadFavorites() {
+      try {
+        const saved = localStorage.getItem("mealmate-favorites");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (!Array.isArray(parsed)) throw new TypeError("Saved favorites must be an array.");
+          state.favorites = new Set(parsed.filter(id => recipeById.has(id)));
+        }
+      } catch (error) {
+        console.error("Could not load MealMate favorites:", error);
+        state.favorites = new Set();
+      }
+    }
+
+    function saveFavorites() {
+      try {
+        localStorage.setItem("mealmate-favorites", JSON.stringify([...state.favorites]));
+      } catch (error) {
+        console.error("Could not save MealMate favorites:", error);
+        window.alert("Your favorite could not be saved in this browser.");
+      }
+    }
+
+    function makeButton(text, className, action, attrs) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = className;
+      button.textContent = text;
+      if (attrs) {
+        for (const [name, value] of Object.entries(attrs)) button.setAttribute(name, value);
+      }
+      button.addEventListener("click", action);
+      return button;
+    }
+
+    function makeFoodImage(recipe, className) {
+      const image = document.createElement("img");
+      image.className = className;
+      image.src = `./images/${recipe.id}.jpg`;
+      image.alt = "";
+      image.loading = "lazy";
+      image.decoding = "async";
+      return image;
+    }
+
+    function projectMapPoint([longitude, latitude]) {
+      return {
+        x: (longitude + 180) * 2.5,
+        y: (90 - latitude) * 2.5
+      };
+    }
+
+    function renderMap() {
+      const svgNamespace = "http://www.w3.org/2000/svg";
+      mapPins.replaceChildren();
+      countries.forEach(country => {
+        const point = projectMapPoint(country.coordinates);
+        const marker = document.createElementNS(svgNamespace, "g");
+        marker.setAttribute("class", "map-pin");
+        marker.setAttribute("data-country", country.id);
+        marker.setAttribute("tabindex", "0");
+        marker.setAttribute("role", "button");
+        marker.setAttribute("aria-label", localizedCountryName(country));
+        marker.setAttribute("aria-pressed", "false");
+        marker.setAttribute("transform", `translate(${point.x.toFixed(1)} ${point.y.toFixed(1)})`);
+
+        const dot = document.createElementNS(svgNamespace, "circle");
+        dot.setAttribute("class", "pin-dot");
+        dot.setAttribute("r", "9");
+        const label = document.createElementNS(svgNamespace, "text");
+        label.setAttribute("class", "pin-label");
+        label.setAttribute("y", ".5");
+        label.textContent = country.code;
+        marker.append(dot, label);
+        marker.addEventListener("click", () => selectCountry(country.id));
+        marker.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectCountry(country.id);
+          }
+        });
+        mapPins.append(marker);
+      });
+    }
+
+    function selectCountry(id) {
+      const country = countryById.get(id);
+      if (!country) return;
+      state.country = id;
+      document.querySelectorAll(".map-pin").forEach(pin => pin.setAttribute("aria-pressed", String(pin.dataset.country === id)));
+      renderCountry();
+      renderMeals();
+    }
+
+    function renderCountry() {
+      const country = countryById.get(state.country);
+      countryHeader.replaceChildren();
+      const row = document.createElement("div");
+      row.className = "country-title-row";
+      const flag = document.createElement("span");
+      flag.className = "country-flag";
+      flag.setAttribute("aria-hidden", "true");
+      flag.textContent = country.flag;
+      const title = document.createElement("div");
+      const heading = document.createElement("h2");
+      heading.textContent = localizedCountryName(country);
+      const region = document.createElement("p");
+      region.textContent = country.region;
+      title.append(heading, region);
+      row.append(flag, title);
+      const note = document.createElement("p");
+      note.textContent = country.note;
+      countryHeader.append(row, note);
+
+      countryRecipes.replaceChildren();
+      recipes.filter(recipe => recipe.country === state.country).forEach(recipe => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "meal-button";
+        button.setAttribute("aria-label", t("openRecipe", { name: localizedRecipeName(recipe), kcal: recipe.kcal }));
+        const emoji = makeFoodImage(recipe, "meal-emoji");
+        emoji.setAttribute("aria-hidden", "true");
+        const copy = document.createElement("span");
+        copy.className = "meal-copy";
+        const name = document.createElement("strong");
+        name.textContent = localizedRecipeName(recipe);
+        const time = document.createElement("span");
+        time.textContent = `${recipe.time} ${t("minutes")} · ${localizedCategory(recipe.category)}`;
+        copy.append(name, time);
+        const kcal = document.createElement("span");
+        kcal.className = "meal-kcal";
+        kcal.textContent = `~${recipe.kcal} kcal`;
+        button.append(emoji, copy, kcal);
+        button.addEventListener("click", () => openRecipe(recipe.id));
+        countryRecipes.append(button);
+      });
+    }
+
+    function normalizeSearchText(text) {
+      return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase();
+    }
+
+    function getVisibleRecipes() {
+      const queryTerms = normalizeSearchText(state.query).trim().split(/\s+/).filter(Boolean);
+      return recipes.filter(recipe => {
+        const country = countryById.get(recipe.country);
+        const searchable = normalizeSearchText([recipe.name, localizedRecipeName(recipe), recipe.description, recipe.category, localizedCategory(recipe.category), country.name, localizedCountryName(country), country.region, ...recipe.ingredients].join(" "));
+        return queryTerms.every(term => searchable.includes(term))
+          && (state.filter === "All dishes" || recipe.category === state.filter)
+          && (!state.favoritesOnly || state.favorites.has(recipe.id));
+      });
+    }
+
+    function toggleFavorite(id) {
+      if (state.favorites.has(id)) state.favorites.delete(id);
+      else state.favorites.add(id);
+      saveFavorites();
+      renderMeals();
+      renderCountry();
+      if (recipeDialog.open) openRecipe(id);
+    }
+
+    function renderFilters() {
+      filterRow.replaceChildren();
+      filters.forEach(filter => {
+        const labelKey = { "All":"all", "Veg":"veg", "Breakfast":"breakfast", "Rice":"rice", "Pasta":"pasta", "Soup":"soup", "Salad":"salad", "Baked":"baked", "Noodles":"noodles", "Snack":"snack" }[filter.label];
+        const button = makeButton(labelKey ? t(labelKey) : filter.label, "filter-button", () => {
+          state.filter = filter.value;
+          if (filter.value === "All dishes") {
+            state.query = "";
+            searchInput.value = "";
+            state.favoritesOnly = false;
+            const favoritesButton = document.getElementById("favoritesFilter");
+            favoritesButton.setAttribute("aria-pressed", "false");
+            favoritesButton.textContent = `♡ ${t("favorites")}`;
+          }
+          renderFilters();
+          renderMeals();
+        }, { "aria-pressed": String(state.filter === filter.value) });
+        filterRow.append(button);
+      });
+    }
+
+    function renderMeals() {
+      const visible = getVisibleRecipes();
+      mealGrid.replaceChildren();
+      collectionCount.textContent = t("count", { count: visible.length });
+      const query = state.query.trim();
+      if (!query) {
+        searchStatus.textContent = t("searchPrompt");
+      } else if (visible.length) {
+        searchStatus.textContent = t("results", { count: visible.length, query });
+      } else {
+        searchStatus.textContent = t("noMatch", { query });
+      }
+      if (!visible.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = t("empty");
+        mealGrid.append(empty);
+        return;
+      }
+      visible.forEach(recipe => {
+        const country = countryById.get(recipe.country);
+        const card = document.createElement("article");
+        card.className = "meal-card";
+        const top = document.createElement("div");
+        top.className = "meal-card-top";
+        const art = makeFoodImage(recipe, "food-art");
+        art.setAttribute("aria-hidden", "true");
+        const favorite = makeButton(state.favorites.has(recipe.id) ? "♥" : "♡", "favorite-button", () => toggleFavorite(recipe.id), {
+          "aria-label": `${state.favorites.has(recipe.id) ? t("saved") : t("saveFavorite")}: ${localizedRecipeName(recipe)}`,
+          "aria-pressed": String(state.favorites.has(recipe.id))
+        });
+        top.append(art, favorite);
+        const body = document.createElement("div");
+        body.className = "meal-card-body";
+        const origin = document.createElement("div");
+        origin.className = "meal-origin";
+        origin.textContent = `${country.flag} ${localizedCountryName(country)}`;
+        const name = document.createElement("h3");
+        name.textContent = localizedRecipeName(recipe);
+        const description = document.createElement("p");
+        description.textContent = recipe.description;
+        const meta = document.createElement("div");
+        meta.className = "meal-meta";
+        const time = document.createElement("span");
+        time.textContent = `◷ ${recipe.time} ${t("minutes")}`;
+        const kcal = document.createElement("span");
+        kcal.textContent = `~${recipe.kcal} kcal`;
+        meta.append(time, kcal);
+        const actions = document.createElement("div");
+        actions.className = "card-actions";
+        const countryButton = makeButton(t("dishes"), "quiet-button", () => selectCountry(recipe.country));
+        const recipeButton = makeButton(t("recipe"), "primary-button", () => openRecipe(recipe.id));
+        actions.append(countryButton, recipeButton);
+        body.append(origin, name, description, meta, actions);
+        card.append(top, body);
+        mealGrid.append(card);
+      });
+    }
+
+    function openRecipe(id) {
+      const recipe = recipeById.get(id);
+      if (!recipe) return;
+      const country = countryById.get(recipe.country);
+      dialogContent.replaceChildren();
+      const top = document.createElement("div");
+      top.className = "dialog-top";
+      const titleGroup = document.createElement("div");
+      titleGroup.className = "dialog-title";
+      const art = makeFoodImage(recipe, "food-art");
+      art.setAttribute("aria-hidden", "true");
+      const titleText = document.createElement("div");
+      const title = document.createElement("h2");
+      title.id = "dialogRecipeName";
+      title.textContent = localizedRecipeName(recipe);
+      const countryText = document.createElement("p");
+      countryText.textContent = `${country.flag} ${localizedCountryName(country)} · ${localizedCategory(recipe.category)}`;
+      titleText.append(title, countryText);
+      titleGroup.append(art, titleText);
+      const close = makeButton("×", "icon-button dialog-close", () => recipeDialog.close(), { "aria-label": t("close") });
+      top.append(titleGroup, close);
+
+      const description = document.createElement("p");
+      description.className = "dialog-description";
+      description.textContent = recipe.description;
+      const stats = document.createElement("div");
+      stats.className = "recipe-stats";
+      [`⏱ ${recipe.time} ${t("minutes")}`, `🍽 ${t("serving")}`, `~${recipe.kcal} kcal ${t("perServing")}`].forEach(text => {
+        const item = document.createElement("span");
+        item.textContent = text;
+        stats.append(item);
+      });
+      const columns = document.createElement("div");
+      columns.className = "recipe-columns";
+      const ingredientSection = document.createElement("section");
+      const ingredientHeading = document.createElement("h3");
+      ingredientHeading.textContent = t("ingredients");
+      const ingredients = document.createElement("ul");
+      recipe.ingredients.forEach(ingredient => {
+        const item = document.createElement("li");
+        item.textContent = ingredient;
+        ingredients.append(item);
+      });
+      ingredientSection.append(ingredientHeading, ingredients);
+      const stepSection = document.createElement("section");
+      const stepsHeading = document.createElement("h3");
+      stepsHeading.textContent = t("howTo");
+      const steps = document.createElement("ol");
+      recipe.steps.forEach(step => {
+        const item = document.createElement("li");
+        item.textContent = step;
+        steps.append(item);
+      });
+      stepSection.append(stepsHeading, steps);
+      columns.append(ingredientSection, stepSection);
+      const note = document.createElement("p");
+      note.className = "calorie-note";
+      note.textContent = t("calorieNote");
+      const footer = document.createElement("div");
+      footer.className = "dialog-footer";
+      const favorite = makeButton(state.favorites.has(id) ? `♥ ${t("saved")}` : `♡ ${t("saveFavorite")}`, "quiet-button", () => toggleFavorite(id), { "aria-pressed": String(state.favorites.has(id)) });
+      const done = makeButton(t("done"), "primary-button", () => recipeDialog.close());
+      footer.append(favorite, done);
+      dialogContent.append(top, description, stats, columns, note, footer);
+      if (!recipeDialog.open) recipeDialog.showModal();
+    }
+
+    languageSelect.addEventListener("change", () => {
+      state.language = languageSelect.value;
+      try {
+        localStorage.setItem("mealmate-language", state.language);
+      } catch (error) {
+        console.error("Could not save MealMate language preference:", error);
+      }
+      applyLanguage();
+    });
+    searchInput.addEventListener("input", () => {
+      state.query = searchInput.value;
+      renderMeals();
+    });
+    searchForm.addEventListener("submit", event => {
+      event.preventDefault();
+      state.query = searchInput.value;
+      renderMeals();
+      document.getElementById("collectionHeading").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    document.getElementById("favoritesFilter").addEventListener("click", event => {
+      state.favoritesOnly = !state.favoritesOnly;
+      event.currentTarget.setAttribute("aria-pressed", String(state.favoritesOnly));
+      event.currentTarget.textContent = `${state.favoritesOnly ? "♥" : "♡"} ${t("favorites")}`;
+      renderMeals();
+    });
+    document.getElementById("surpriseButton").addEventListener("click", () => {
+      const visible = getVisibleRecipes();
+      if (!visible.length) {
+        window.alert(t("noChoices"));
+        return;
+      }
+      const choice = visible[Math.floor(Math.random() * visible.length)];
+      selectCountry(choice.country);
+      openRecipe(choice.id);
+    });
+    themeButton.addEventListener("click", () => {
+      const dark = document.documentElement.dataset.theme !== "dark";
+      document.documentElement.dataset.theme = dark ? "dark" : "light";
+      updateThemeButton();
+      try {
+        localStorage.setItem("mealmate-theme", dark ? "dark" : "light");
+      } catch (error) {
+        console.error("Could not save MealMate theme preference:", error);
+      }
+    });
+    recipeDialog.addEventListener("click", event => {
+      if (event.target === recipeDialog) recipeDialog.close();
+    });
+    recipeDialog.addEventListener("close", () => {
+      dialogContent.replaceChildren();
+    });
+    function loadTheme() {
+      try {
+        const saved = localStorage.getItem("mealmate-theme");
+        const dark = saved === "dark";
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        updateThemeButton();
+      } catch (error) {
+        console.error("Could not load MealMate theme preference:", error);
+      }
+    }
+
+    loadFavorites();
+    loadLanguage();
+    loadTheme();
+    applyLanguage();
+  </script>
+</body>
+</html>
